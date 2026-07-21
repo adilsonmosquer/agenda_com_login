@@ -1,0 +1,25 @@
+from datetime import datetime
+
+from db import db
+
+
+class Importacao(db.Model):
+    __tablename__ = "importacoes"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    arquivo = db.Column(db.String(255), nullable=False)
+
+    tipo = db.Column(db.String(20), nullable=False)
+
+    data_importacao = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    registros = db.Column(db.Integer, default=0)
+
+    status = db.Column(db.String(30), default="Concluído")
+
+    observacao = db.Column(db.String(300))
+
+    itens = db.relationship(
+        "CronogramaItem", back_populates="importacao", cascade="all, delete-orphan"
+    )
