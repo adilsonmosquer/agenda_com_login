@@ -10,13 +10,15 @@ class Importacao(db.Model):
 
     arquivo = db.Column(db.String(255), nullable=False)
 
+    periodo = db.Column(db.String(20), nullable=False, default="Não informado")
+
     tipo = db.Column(db.String(20), nullable=False)
 
     data_importacao = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     registros = db.Column(db.Integer, default=0)
 
-    status = db.Column(db.String(30), default="Concluído")
+    ativa = db.Column(db.Boolean, default=False, nullable=False)
 
     observacao = db.Column(db.String(300))
 
