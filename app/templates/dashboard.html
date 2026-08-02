@@ -1,8 +1,8 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block title %} Dashboard {% endblock %} {% block
+content %}
 
 <h2 class="mb-4">Dashboard</h2>
 
-<!-- Cards -->
 <div class="row">
   <div class="col-md-4 mb-3">
     <div class="card text-bg-primary">
@@ -17,8 +17,8 @@
     <div class="card text-bg-success">
       <div class="card-body">
         <h5 class="card-title">Próximo Evento</h5>
-        <h6>{{ proximo_evento }}</h6>
-        <p>{{ horario_proximo }}</p>
+        <strong>{{ proximo_evento }}</strong><br />
+        {{ horario_proximo }}
       </div>
     </div>
   </div>
@@ -33,19 +33,18 @@
   </div>
 </div>
 
-<!-- Cronograma -->
 <div class="card mt-4">
   <div class="card-header">
     <strong>Cronograma</strong>
   </div>
 
   <div class="card-body">
-    <table class="table table-striped table-hover align-middle">
+    <table class="table table-striped table-hover">
       <thead>
         <tr>
           <th>Data</th>
           <th>Hora</th>
-          <th>Procedimento</th>
+          <th>Descrição</th>
           <th>Executor</th>
           <th>Status</th>
         </tr>
@@ -56,14 +55,22 @@
 
         <tr>
           <td>{{ evento.data }}</td>
+
           <td>{{ evento.horario }}</td>
+
           <td>{{ evento.descricao }}</td>
+
           <td>{{ evento.executor }}</td>
+
           <td>
             {% if evento.concluido %}
-            <span class="badge bg-success">Concluído</span>
+
+            <span class="badge bg-success"> Concluído </span>
+
             {% else %}
-            <span class="badge bg-warning text-dark">Pendente</span>
+
+            <span class="badge bg-warning text-dark"> Pendente </span>
+
             {% endif %}
           </td>
         </tr>

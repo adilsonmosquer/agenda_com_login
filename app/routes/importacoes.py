@@ -1,23 +1,33 @@
 from pathlib import Path
 
-from flask import Blueprint
-from flask import current_app
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from werkzeug.utils import secure_filename
 
-from db import db
-from app.models.importacao import Importacao
-from app.services.importacao_service import listar_importacoes
+from app.services.importacao_service import (
+    listar_importacoes,
+    importar_cronograma,
+    excluir_importacao,
+)
 
-importacoes_bp = Blueprint("importacoes", __name__)
+importacoes_bp = Blueprint(
+    "importacoes",
+    __name__,
+)
 
 
 def arquivo_permitido(nome_arquivo):
+    if "." not in nome_arquivo:
+        return False
 
-    extensao = Path(nome_arquivo).suffix.lower().replace(".", "")
+    extensao = nome_arquivo.rsplit(".", 1)[1].lower()
 
     return extensao in current_app.config["ALLOWED_EXTENSIONS"]
 
@@ -28,32 +38,67 @@ def importacoes():
     if request.method == "POST":
 
         if "arquivo" not in request.files:
+            flash("Nenhum arquivo enviado.", "danger")
             return redirect(request.url)
 
         arquivo = request.files["arquivo"]
 
         if arquivo.filename == "":
+            flash("Selecione um arquivo.", "warning")
             return redirect(request.url)
 
-        if arquivo and arquivo_permitido(arquivo.filename):
+        if not arquivo_permitido(arquivo.filename):
+            flash("Formato de arquivo não permitido.", "danger")
+            return redirect(request.url)
 
-            nome = secure_filename(arquivo.filename)
+        nome = secure_filename(arquivo.filename)
 
-            destino = Path(current_app.config["UPLOAD_FOLDER"]) / nome
-            destino.parent.mkdir(parents=True, exist_ok=True)
-            arquivo.save(destino)
+        destino = Path(current_app.config["UPLOAD_FOLDER"]) / nome
 
-            extensao = destino.suffix.replace(".", "").upper()
+        destino.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
 
-            nova_importacao = Importacao(
-                arquivo=nome, tipo=extensao, registros=0, status="Arquivo recebido"
+        arquivo.save(destino)
+
+        try:
+
+            importar_cronograma(
+                arquivo_path=destino,
+                nome_arquivo=nome,
             )
 
-            db.session.add(nova_importacao)
-            db.session.commit()
+            flash(
+                "Cronograma importado com sucesso.",
+                "success",
+            )
 
-            return redirect(url_for("importacoes.importacoes"))
+        except Exception as erro:
 
-    lista = listar_importacoes()
+            flash(
+                f"Erro durante a importação: {erro}",
+                "danger",
+            )
 
-    return render_template("importacoes.html", importacoes=lista)
+        return redirect(url_for("importacoes.importacoes"))
+
+    importacoes = listar_importacoes()
+
+    return render_template(
+        "importacoes.html",
+        importacoes=importacoes,
+    )
+
+
+@importacoes_bp.post("/importacoes/<int:importacao_id>/excluir")
+def excluir(importacao_id):
+
+    try:
+        excluir_importacao(importacao_id)
+        flash("Importação excluída com sucesso.", "success")
+
+    except Exception as erro:
+        flash(f"Erro ao excluir: {erro}", "danger")
+
+    return redirect(url_for("importacoes.importacoes"))

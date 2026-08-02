@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambiente virtual
+venv/
+.env
+
+# Banco SQLite
+instance/*.db
+
+# Uploads
+uploads/*
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

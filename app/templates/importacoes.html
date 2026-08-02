@@ -1,72 +1,105 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block title %} Importações {% endblock %} {% block
+content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2>Importações</h2>
-</div>
+<div class="container mt-4">
+  <h2 class="mb-4">Importação de Cronogramas</h2>
 
-<div class="card mb-4">
-  <div class="card-header">Nova Importação</div>
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for categoria, mensagem in messages %}
+  <div class="alert alert-{{ categoria }}">{{ mensagem }}</div>
+  {% endfor %} {% endif %} {% endwith %}
 
-  <div class="card-body">
-    <form method="POST" action="/importacoes" enctype="multipart/form-data">
-      <div class="mb-3">
-        <label class="form-label"> Selecione um arquivo </label>
+  <div class="card mb-4">
+    <div class="card-header">Novo Cronograma</div>
 
-        <input
-          class="form-control"
-          type="file"
-          name="arquivo"
-          accept=".xlsx,.xls,.pdf"
-          required
-        />
-      </div>
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label class="form-label"> Arquivo </label>
 
-      <button type="submit" class="btn btn-primary">📥 Importar</button>
-    </form>
+          <input type="file" class="form-control" name="arquivo" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Importar</button>
+      </form>
+    </div>
   </div>
-</div>
 
-<div class="card">
-  <div class="card-header">Histórico de Importações</div>
+  <div class="card">
+    <div class="card-header">Histórico de Importações</div>
 
-  <div class="card-body">
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Arquivo</th>
-          <th>Tipo</th>
-          <th>Registros</th>
-          <th>Status</th>
-        </tr>
-      </thead>
+    <div class="card-body">
+      <table class="table table-striped table-hover align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Arquivo</th>
+            <th>Período</th>
+            <th>Tipo</th>
+            <th>Registros</th>
+            <th>Importação</th>
+            <th>Status</th>
+            <th width="120">Ações</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        {% for item in importacoes %}
+        <tbody>
+          {% for importacao in importacoes %}
 
-        <tr>
-          <td>{{ item.data_importacao.strftime('%d/%m/%Y %H:%M') }}</td>
+          <tr>
+            <td>{{ importacao.id }}</td>
 
-          <td>{{ item.arquivo }}</td>
+            <td>{{ importacao.arquivo }}</td>
 
-          <td>{{ item.tipo }}</td>
+            <td>{{ importacao.periodo }}</td>
 
-          <td>{{ item.registros }}</td>
+            <td>{{ importacao.tipo|upper }}</td>
 
-          <td>
-            <span class="badge bg-success"> {{ item.status }} </span>
-          </td>
-        </tr>
+            <td>{{ importacao.registros }}</td>
 
-        {% else %}
+            <td>{{ importacao.data_importacao.strftime("%d/%m/%Y %H:%M") }}</td>
 
-        <tr>
-          <td colspan="5" class="text-center">Nenhuma importação realizada.</td>
-        </tr>
+            <td>
+              {% if importacao.ativa %}
 
-        {% endfor %}
-      </tbody>
-    </table>
+              <span class="badge bg-success"> Ativa </span>
+
+              {% else %}
+
+              <span class="badge bg-secondary"> Inativa </span>
+
+              {% endif %}
+            </td>
+
+            <td>
+              <form
+                action="{{ url_for('importacoes.excluir', importacao_id=importacao.id) }}"
+                method="POST"
+                onsubmit="
+                  return confirm(
+                    'Deseja realmente excluir esta importação? Todos os eventos vinculados serão removidos e o arquivo será apagado.',
+                  );
+                "
+              >
+                <button type="submit" class="btn btn-danger btn-sm">
+                  🗑️ Excluir
+                </button>
+              </form>
+            </td>
+          </tr>
+
+          {% else %}
+
+          <tr>
+            <td colspan="8" class="text-center">
+              Nenhuma importação encontrada.
+            </td>
+          </tr>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

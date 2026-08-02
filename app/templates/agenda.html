@@ -1,0 +1,65 @@
+{% extends "base.html" %} {% block title %} Agenda {% endblock %} {% block
+content %}
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2>Agenda do Dia</h2>
+      <p class="text-muted mb-0">{{ eventos|length }} evento(s)</p>
+    </div>
+
+    <a
+      href="{{ url_for('dashboard.dashboard') }}"
+      class="btn btn-outline-secondary"
+    >
+      Dashboard
+    </a>
+  </div>
+
+  {% if eventos %}
+
+  <div class="list-group">
+    {% for evento in eventos %} {% if evento.situacao == "concluido" %} {% set
+    classe = "success" %} {% set icone = "✔" %} {% set texto = "Concluído" %} {%
+    elif evento.situacao == "proximo" %} {% set classe = "warning" %} {% set
+    icone = "⏰" %} {% set texto = "Próximo" %} {% elif evento.situacao ==
+    "atrasado" %} {% set classe = "danger" %} {% set icone = "⚠" %} {% set texto
+    = "Atrasado" %} {% else %} {% set classe = "secondary" %} {% set icone = "□"
+    %} {% set texto = "Pendente" %} {% endif %}
+
+    <div class="list-group-item border-start border-4 border-{{ classe }}">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="mb-1">
+            {{ icone }} {{ evento.horario }} - {{ evento.descricao }}
+          </h5>
+
+          {% if evento.executor %}
+
+          <p class="mb-1 text-muted">
+            <strong>Executor:</strong>
+            {{ evento.executor }}
+          </p>
+
+          {% endif %} {% if evento.observacao %}
+
+          <p class="mb-1">{{ evento.observacao }}</p>
+
+          {% endif %}
+        </div>
+
+        <span class="badge bg-{{ classe }}"> {{ texto }} </span>
+      </div>
+    </div>
+
+    {% endfor %}
+  </div>
+
+  {% else %}
+
+  <div class="alert alert-info">Nenhum evento encontrado para hoje.</div>
+
+  {% endif %}
+</div>
+
+{% endblock %}
