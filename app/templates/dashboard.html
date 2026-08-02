@@ -3,11 +3,18 @@ content %}
 
 <h2 class="mb-4">Dashboard</h2>
 
+<div class="mb-3">
+  <a href="{{ url_for('dashboard.enviar_telegram') }}" class="btn btn-primary">
+    📤 Enviar Agenda para Telegram
+  </a>
+</div>
+
 <div class="row">
   <div class="col-md-4 mb-3">
     <div class="card text-bg-primary">
       <div class="card-body">
         <h5 class="card-title">Eventos</h5>
+
         <h2>{{ eventos_hoje }}</h2>
       </div>
     </div>
@@ -17,7 +24,11 @@ content %}
     <div class="card text-bg-success">
       <div class="card-body">
         <h5 class="card-title">Próximo Evento</h5>
-        <strong>{{ proximo_evento }}</strong><br />
+
+        <strong>{{ proximo_evento }}</strong>
+
+        <br />
+
         {{ horario_proximo }}
       </div>
     </div>
@@ -27,6 +38,7 @@ content %}
     <div class="card text-bg-warning">
       <div class="card-body">
         <h5 class="card-title">Pendentes</h5>
+
         <h2>{{ pendentes }}</h2>
       </div>
     </div>
@@ -35,7 +47,7 @@ content %}
 
 <div class="card mt-4">
   <div class="card-header">
-    <strong>Cronograma</strong>
+    <strong> Cronograma </strong>
   </div>
 
   <div class="card-body">
@@ -43,9 +55,13 @@ content %}
       <thead>
         <tr>
           <th>Data</th>
+
           <th>Hora</th>
+
           <th>Descrição</th>
+
           <th>Executor</th>
+
           <th>Status</th>
         </tr>
       </thead>
