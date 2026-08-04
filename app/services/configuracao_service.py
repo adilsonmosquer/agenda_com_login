@@ -1,3 +1,5 @@
+from flask import current_app
+
 from app.models.configuracao import Configuracao
 from db import db
 
@@ -5,95 +7,215 @@ from db import db
 class ConfiguracaoService:
 
     @staticmethod
-    def obter(chave, padrao=None):
+    def get(chave, default=None):
 
-        configuracao = Configuracao.query.filter_by(
+        config = Configuracao.query.filter_by(
             chave=chave
         ).first()
 
-        if configuracao:
+        if config:
+            return config.valor_atual
 
-            return configuracao.valor_atual
-
-        return padrao
+        return default
 
     @staticmethod
-    def definir(chave, valor):
+    def set(chave, valor):
 
-        configuracao = Configuracao.query.filter_by(
+        config = Configuracao.query.filter_by(
             chave=chave
         ).first()
 
-        if not configuracao:
+        if config:
 
-            raise ValueError(
-                f"Configuração '{chave}' não encontrada."
+            config.valor_atual = str(valor)
+
+        else:
+
+            config = Configuracao(
+
+                categoria="Sistema",
+
+                chave=chave,
+
+                valor_atual=str(valor),
+
+                valor_padrao=str(valor),
+
+                tipo="texto",
+
+                descricao="",
+
+                editavel=True,
+
+                obrigatorio=False,
+
+                reiniciar=False,
+
             )
 
-        configuracao.valor_atual = str(valor)
+            db.session.add(config)
 
         db.session.commit()
+
+        return config
 
     @staticmethod
     def listar():
 
-        return (
-            Configuracao.query
-            .order_by(
-                Configuracao.categoria,
-                Configuracao.chave,
-            )
-            .all()
-        )
+        return Configuracao.query.order_by(
+
+            Configuracao.categoria,
+
+            Configuracao.chave,
+
+        ).all()
 
     @staticmethod
     def existe(chave):
 
         return (
+
             Configuracao.query.filter_by(
+
                 chave=chave
-            ).first()
-            is not None
+
+            ).count()
+
+            > 0
+
         )
 
     @staticmethod
-    def criar(
-        categoria,
-        chave,
-        valor,
-        tipo,
-        descricao="",
-        editavel=True,
-        obrigatorio=False,
-        reiniciar=False,
-    ):
+    def criar_padroes():
 
-        if ConfiguracaoService.existe(chave):
+        padroes = [
 
-            return
+            # ==========================
+            # Telegram
+            # ==========================
 
-        configuracao = Configuracao(
+            {
+                "categoria": "Telegram",
+                "chave": "telegram_token",
+                "valor": current_app.config.get(
+                    "TELEGRAM_TOKEN",
+                    "",
+                ),
+                "tipo": "texto",
+                "descricao": "Token do Bot",
+            },
 
-            categoria=categoria,
+            {
+                "categoria": "Telegram",
+                "chave": "telegram_chat_id",
+                "valor": current_app.config.get(
+                    "TELEGRAM_CHAT_ID",
+                    "",
+                ),
+                "tipo": "texto",
+                "descricao": "Chat ID",
+            },
 
-            chave=chave,
+            # ==========================
+            # Agenda
+            # ==========================
 
-            valor_atual=str(valor),
+            {
+                "categoria": "Agenda",
+                "chave": "hora_resumo",
+                "valor": "07:00",
+                "tipo": "hora",
+                "descricao": "Horário do resumo diário",
+            },
 
-            valor_padrao=str(valor),
+            {
+                "categoria": "Agenda",
+                "chave": "antecedencia_lembrete",
+                "valor": "15",
+                "tipo": "numero",
+                "descricao": "Antecedência dos lembretes (minutos)",
+            },
 
-            tipo=tipo,
+            # ==========================
+            # Tela TV
+            # ==========================
 
-            descricao=descricao,
+            {
+                "categoria": "Tela TV",
+                "chave": "tempo_tela",
+                "valor": "60",
+                "tipo": "numero",
+                "descricao": "Tempo de atualização da Tela TV (segundos)",
+            },
 
-            editavel=editavel,
+            # ==========================
+            # Backup
+            # ==========================
 
-            obrigatorio=obrigatorio,
+            {
+                "categoria": "Backup",
+                "chave": "hora_backup",
+                "valor": "02:00",
+                "tipo": "hora",
+                "descricao": "Horário do backup automático",
+            },
 
-            reiniciar=reiniciar,
+        ]
 
-        )
+        alterado = False
 
-        db.session.add(configuracao)
+        for item in padroes:
 
-        db.session.commit()
+            config = Configuracao.query.filter_by(
+                chave=item["chave"]
+            ).first()
+
+            if config is None:
+
+                db.session.add(
+
+                    Configuracao(
+
+                        categoria=item["categoria"],
+
+                        chave=item["chave"],
+
+                        valor_atual=item["valor"],
+
+                        valor_padrao=item["valor"],
+
+                        tipo=item["tipo"],
+
+                        descricao=item["descricao"],
+
+                        editavel=True,
+
+                        obrigatorio=False,
+
+                        reiniciar=False,
+
+                    )
+
+                )
+
+                alterado = True
+
+            else:
+
+                # Migração automática do .env para o banco.
+                # Só preenche quando o banco estiver vazio.
+
+                if (
+                    not config.valor_atual
+                    and item["valor"]
+                ):
+
+                    config.valor_atual = item["valor"]
+
+                    config.valor_padrao = item["valor"]
+
+                    alterado = True
+
+        if alterado:
+
+            db.session.commit()

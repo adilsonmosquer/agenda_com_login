@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}
+Configurações
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>⚙ Configurações do Sistema</h2>
+
+            <p class="text-muted mb-0">
+
+                Central de administração da Agenda Operacional
+
+            </p>
+
+        </div>
+
+    </div>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            {% for categoria, mensagem in mensagens %}
+                <div class="alert alert-{{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+        {% for categoria, configuracoes in categorias.items() %}
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-primary text-white">
+
+                <h5 class="mb-0">
+
+                    {{ categoria }}
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% for configuracao in configuracoes %}
+
+                <div class="mb-4">
+
+                    <label class="form-label">
+
+                        <strong>{{ configuracao.descricao }}</strong>
+
+                    </label>
+
+                    {% if configuracao.tipo == "numero" %}
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="{{ configuracao.chave }}"
+                            value="{{ configuracao.valor_atual }}">
+
+                    {% elif configuracao.tipo == "hora" %}
+
+                        <input
+                            type="time"
+                            class="form-control"
+                            name="{{ configuracao.chave }}"
+                            value="{{ configuracao.valor_atual }}">
+
+                    {% elif configuracao.tipo == "boolean" %}
+
+                        <select
+                            class="form-select"
+                            name="{{ configuracao.chave }}">
+
+                            <option value="True"
+                                {% if configuracao.valor_atual=="True" %}selected{% endif %}>
+                                Sim
+                            </option>
+
+                            <option value="False"
+                                {% if configuracao.valor_atual=="False" %}selected{% endif %}>
+                                Não
+                            </option>
+
+                        </select>
+
+                    {% else %}
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="{{ configuracao.chave }}"
+                            value="{{ configuracao.valor_atual }}">
+
+                    {% endif %}
+
+                    {% if configuracao.reiniciar %}
+
+                        <small class="text-danger">
+
+                            ⚠ Esta alteração exige reiniciar o Worker.
+
+                        </small>
+
+                    {% endif %}
+
+                    {% if configuracao.valor_padrao %}
+
+                        <div class="mt-1">
+
+                            <small class="text-muted">
+
+                                Valor padrão:
+                                <strong>{{ configuracao.valor_padrao }}</strong>
+
+                            </small>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+        <div class="text-end">
+
+            <a
+                href="{{ url_for('dashboard.dashboard') }}"
+                class="btn btn-secondary">
+
+                Cancelar
+
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                💾 Salvar Configurações
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,9 +1,9 @@
 from datetime import datetime
 
 import requests
-from flask import current_app
 
 from app.models.cronograma_item import CronogramaItem
+from app.services.configuracao_service import ConfiguracaoService
 
 
 class TelegramService:
@@ -20,7 +20,10 @@ class TelegramService:
         )
 
         if not eventos:
-            return "📅 Agenda Operacional\n\n" "Nenhum evento para hoje."
+            return (
+                "📅 Agenda Operacional\n\n"
+                "Nenhum evento para hoje."
+            )
 
         mensagem = []
 
@@ -47,16 +50,22 @@ class TelegramService:
     @staticmethod
     def enviar():
 
-        token = current_app.config["TELEGRAM_TOKEN"]
-        chat_id = current_app.config["TELEGRAM_CHAT_ID"]
+        token = ConfiguracaoService.get("telegram_token")
+        chat_id = ConfiguracaoService.get("telegram_chat_id")
 
         if not token:
-            raise Exception("TELEGRAM_TOKEN não configurado.")
+            raise Exception(
+                "Token do Telegram não configurado."
+            )
 
         if not chat_id:
-            raise Exception("TELEGRAM_CHAT_ID não configurado.")
+            raise Exception(
+                "Chat ID do Telegram não configurado."
+            )
 
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        url = (
+            f"https://api.telegram.org/bot{token}/sendMessage"
+        )
 
         payload = {
             "chat_id": chat_id,
