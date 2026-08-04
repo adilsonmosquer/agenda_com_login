@@ -4,28 +4,65 @@ from db import db
 class CronogramaItem(db.Model):
     __tablename__ = "cronograma_itens"
 
-    id = db.Column(db.Integer, primary_key=True)
-
-    importacao_id = db.Column(
-        db.Integer, db.ForeignKey("importacoes.id"), nullable=False
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
     )
 
-    data = db.Column(db.String(10), nullable=False)
+    importacao_id = db.Column(
+        db.Integer,
+        db.ForeignKey("importacoes.id"),
+        nullable=True,
+    )
 
-    dia_semana = db.Column(db.String(20))
+    origem = db.Column(
+        db.String(20),
+        nullable=False,
+        default="IMPORTACAO",
+    )
 
-    horario = db.Column(db.String(5), nullable=False)
+    data = db.Column(
+        db.String(10),
+        nullable=False,
+    )
 
-    descricao = db.Column(db.String(300), nullable=False)
+    dia_semana = db.Column(
+        db.String(20),
+    )
 
-    executor = db.Column(db.String(100))
+    horario = db.Column(
+        db.String(5),
+        nullable=False,
+    )
 
-    cor = db.Column(db.String(20))
+    descricao = db.Column(
+        db.String(300),
+        nullable=False,
+    )
 
-    status = db.Column(db.String(20), default="Pendente")
+    executor = db.Column(
+        db.String(100),
+    )
 
-    concluido = db.Column(db.Boolean, default=False)
+    cor = db.Column(
+        db.String(20),
+    )
 
-    observacao = db.Column(db.String(300))
+    status = db.Column(
+        db.String(20),
+        default="Pendente",
+    )
 
-    importacao = db.relationship("Importacao", back_populates="itens")
+    concluido = db.Column(
+        db.Boolean,
+        default=False,
+    )
+
+    observacao = db.Column(
+        db.String(300),
+    )
+
+    importacao = db.relationship(
+        "Importacao",
+        back_populates="itens",
+    )

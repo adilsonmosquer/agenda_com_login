@@ -1,27 +1,48 @@
+# ==========================
+# Ambiente Virtual
+# ==========================
+.venv/
+venv/
+
+# ==========================
 # Python
+# ==========================
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
 
-# Ambiente virtual
-venv/
+# ==========================
+# Banco de Dados
+# ==========================
+instance/
+*.db
+*.sqlite3
+
+# ==========================
+# Variáveis de Ambiente
+# ==========================
 .env
 
-# Banco SQLite
-instance/*.db
-
+# ==========================
 # Uploads
-uploads/*
+# ==========================
+uploads/
 
-# VS Code
+# ==========================
+# Logs
+# ==========================
+*.log
+
+# ==========================
+# IDEs
+# ==========================
 .vscode/
-
-# JetBrains
 .idea/
 
-# Arquivos do sistema
+# ==========================
+# Sistema Operacional
+# ==========================
 .DS_Store
 Thumbs.db
-
-# Logs
-*.log

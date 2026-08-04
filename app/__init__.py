@@ -8,6 +8,7 @@ migrate = Migrate()
 
 
 def create_app():
+
     app = Flask(__name__)
 
     app.config.from_object(Config)
@@ -18,14 +19,17 @@ def create_app():
     # Importa os modelos
     from app.models.importacao import Importacao
     from app.models.cronograma_item import CronogramaItem
+    from app.models.configuracao import Configuracao
 
     # Registra os blueprints
     from app.routes.dashboard import dashboard_bp
     from app.routes.importacoes import importacoes_bp
     from app.routes.agenda import agenda_bp
+    from app.routes.evento import evento_bp
 
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(importacoes_bp)
     app.register_blueprint(agenda_bp)
+    app.register_blueprint(evento_bp)
 
     return app

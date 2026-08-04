@@ -1,0 +1,2 @@
+def executar(app):
+    pass

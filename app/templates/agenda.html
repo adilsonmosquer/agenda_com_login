@@ -1,65 +1,223 @@
-{% extends "base.html" %} {% block title %} Agenda {% endblock %} {% block
-content %}
+{% extends "base.html" %}
+
+{% block title %}
+Agenda
+{% endblock %}
+
+{% block content %}
 
 <div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2>Agenda do Dia</h2>
-      <p class="text-muted mb-0">{{ eventos|length }} evento(s)</p>
-    </div>
 
-    <a
-      href="{{ url_for('dashboard.dashboard') }}"
-      class="btn btn-outline-secondary"
-    >
-      Dashboard
-    </a>
-  </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-  {% if eventos %}
-
-  <div class="list-group">
-    {% for evento in eventos %} {% if evento.situacao == "concluido" %} {% set
-    classe = "success" %} {% set icone = "✔" %} {% set texto = "Concluído" %} {%
-    elif evento.situacao == "proximo" %} {% set classe = "warning" %} {% set
-    icone = "⏰" %} {% set texto = "Próximo" %} {% elif evento.situacao ==
-    "atrasado" %} {% set classe = "danger" %} {% set icone = "⚠" %} {% set texto
-    = "Atrasado" %} {% else %} {% set classe = "secondary" %} {% set icone = "□"
-    %} {% set texto = "Pendente" %} {% endif %}
-
-    <div class="list-group-item border-start border-4 border-{{ classe }}">
-      <div class="d-flex justify-content-between align-items-start">
         <div>
-          <h5 class="mb-1">
-            {{ icone }} {{ evento.horario }} - {{ evento.descricao }}
-          </h5>
 
-          {% if evento.executor %}
+            <h2>Agenda do Dia</h2>
 
-          <p class="mb-1 text-muted">
-            <strong>Executor:</strong>
-            {{ evento.executor }}
-          </p>
+            <p class="text-muted mb-0">
 
-          {% endif %} {% if evento.observacao %}
+                {{ eventos|length }} evento(s)
 
-          <p class="mb-1">{{ evento.observacao }}</p>
+            </p>
 
-          {% endif %}
         </div>
 
-        <span class="badge bg-{{ classe }}"> {{ texto }} </span>
-      </div>
+        <div>
+
+            <a
+                href="{{ url_for('evento.novo') }}"
+                class="btn btn-success">
+
+                ➕ Novo Evento
+
+            </a>
+
+            <a
+                href="{{ url_for('dashboard.dashboard') }}"
+                class="btn btn-outline-secondary">
+
+                Dashboard
+
+            </a>
+
+        </div>
+
     </div>
 
-    {% endfor %}
-  </div>
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+            {% for categoria, mensagem in mensagens %}
+                <div class="alert alert-{{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-  {% else %}
+    {% if eventos %}
 
-  <div class="alert alert-info">Nenhum evento encontrado para hoje.</div>
+    <div class="list-group">
 
-  {% endif %}
+        {% for evento in eventos %}
+
+            {% if evento.concluido %}
+
+                {% set classe = "success" %}
+                {% set icone = "✔" %}
+                {% set texto = "Concluído" %}
+
+            {% elif evento.status == "Próximo" %}
+
+                {% set classe = "warning" %}
+                {% set icone = "⏰" %}
+                {% set texto = "Próximo" %}
+
+            {% elif evento.status == "Atrasado" %}
+
+                {% set classe = "danger" %}
+                {% set icone = "⚠" %}
+                {% set texto = "Atrasado" %}
+
+            {% else %}
+
+                {% set classe = "secondary" %}
+                {% set icone = "□" %}
+                {% set texto = "Pendente" %}
+
+            {% endif %}
+
+            <div class="list-group-item border-start border-4 border-{{ classe }}">
+
+                <div class="d-flex justify-content-between">
+
+                    <div class="flex-grow-1">
+
+                        <h5 class="mb-2">
+
+                            {{ icone }}
+                            {{ evento.horario }}
+                            -
+                            {{ evento.descricao }}
+
+                        </h5>
+
+                        {% if evento.executor %}
+
+                        <p class="mb-1 text-muted">
+
+                            <strong>Executor:</strong>
+
+                            {{ evento.executor }}
+
+                        </p>
+
+                        {% endif %}
+
+                        {% if evento.observacao %}
+
+                        <p class="mb-2">
+
+                            {{ evento.observacao }}
+
+                        </p>
+
+                        {% endif %}
+
+                        {% if evento.origem == "MANUAL" %}
+
+                        <span class="badge bg-primary">
+
+                            Evento Manual
+
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-dark">
+
+                            Evento Importado
+
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="text-end">
+
+                        <span class="badge bg-{{ classe }} mb-2">
+
+                            {{ texto }}
+
+                        </span>
+
+                        <br>
+
+                        {% if evento.concluido %}
+
+                            <a
+                                href="{{ url_for('evento.concluir', id=evento.id) }}"
+                                class="btn btn-outline-warning btn-sm">
+
+                                ↩ Reabrir
+
+                            </a>
+
+                        {% else %}
+
+                            <a
+                                href="{{ url_for('evento.concluir', id=evento.id) }}"
+                                class="btn btn-success btn-sm">
+
+                                ✔ Concluir
+
+                            </a>
+
+                        {% endif %}
+
+                        {% if evento.origem == "MANUAL" %}
+
+                            <br><br>
+
+                            <a
+                                href="{{ url_for('evento.editar', id=evento.id) }}"
+                                class="btn btn-outline-primary btn-sm">
+
+                                ✏ Editar
+
+                            </a>
+
+                            <a
+                                href="{{ url_for('evento.excluir', id=evento.id) }}"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="return confirm('Deseja realmente excluir este evento?');">
+
+                                🗑 Excluir
+
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+        <div class="alert alert-info">
+
+            Nenhum evento encontrado para hoje.
+
+        </div>
+
+    {% endif %}
+
 </div>
 
 {% endblock %}

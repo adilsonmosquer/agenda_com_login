@@ -8,6 +8,7 @@ from flask import (
 
 from app.services.dashboard_service import obter_dados_dashboard
 from app.services.telegram_service import TelegramService
+from app.services.demo_service import DemoService
 
 dashboard_bp = Blueprint(
     "dashboard",
@@ -44,5 +45,16 @@ def enviar_telegram():
             str(erro),
             "danger",
         )
+
+    return redirect(url_for("dashboard.dashboard"))
+@dashboard_bp.route("/demo/popular")
+def popular_demo():
+
+    DemoService.popular()
+
+    flash(
+        "Banco de demonstração criado com sucesso.",
+        "success",
+    )
 
     return redirect(url_for("dashboard.dashboard"))

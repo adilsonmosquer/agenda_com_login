@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ titulo }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow">
+
+                <div class="card-header">
+
+                    <h3 class="mb-0">
+
+                        {{ titulo }}
+
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label">
+
+                                    Data
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="data"
+                                    class="form-control"
+                                    value="{{ evento.data if evento else hoje }}"
+                                    required>
+
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label">
+
+                                    Horário
+
+                                </label>
+
+                                <input
+                                    type="time"
+                                    name="horario"
+                                    class="form-control"
+                                    value="{{ evento.horario if evento else '' }}"
+                                    required>
+
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label">
+
+                                    Cor
+
+                                </label>
+
+                                <select
+                                    name="cor"
+                                    class="form-select">
+
+                                    <option value="">Padrão</option>
+
+                                    <option value="primary"
+                                        {% if evento and evento.cor=="primary" %}selected{% endif %}>
+                                        Azul
+                                    </option>
+
+                                    <option value="success"
+                                        {% if evento and evento.cor=="success" %}selected{% endif %}>
+                                        Verde
+                                    </option>
+
+                                    <option value="warning"
+                                        {% if evento and evento.cor=="warning" %}selected{% endif %}>
+                                        Amarelo
+                                    </option>
+
+                                    <option value="danger"
+                                        {% if evento and evento.cor=="danger" %}selected{% endif %}>
+                                        Vermelho
+                                    </option>
+
+                                    <option value="secondary"
+                                        {% if evento and evento.cor=="secondary" %}selected{% endif %}>
+                                        Cinza
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Descrição
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="descricao"
+                                class="form-control"
+                                value="{{ evento.descricao if evento else '' }}"
+                                required>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                Executor
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="executor"
+                                class="form-control"
+                                value="{{ evento.executor if evento else '' }}">
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Observação
+
+                            </label>
+
+                            <textarea
+                                name="observacao"
+                                class="form-control"
+                                rows="4">{{ evento.observacao if evento else '' }}</textarea>
+
+                        </div>
+
+                        <div class="text-end">
+
+                            <a
+                                href="{{ url_for('agenda.agenda') }}"
+                                class="btn btn-secondary">
+
+                                Cancelar
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                💾 Salvar
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

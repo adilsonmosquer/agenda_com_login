@@ -4,11 +4,18 @@ content %}
 <h2 class="mb-4">Dashboard</h2>
 
 <div class="mb-3">
-  <a href="{{ url_for('dashboard.enviar_telegram') }}" class="btn btn-primary">
-    📤 Enviar Agenda para Telegram
-  </a>
-</div>
 
+    <a href="{{ url_for('dashboard.enviar_telegram') }}"
+       class="btn btn-primary">
+        📤 Enviar Agenda para Telegram
+    </a>
+
+    <a href="{{ url_for('dashboard.popular_demo') }}"
+       class="btn btn-success ms-2">
+        🧪 Popular Banco (Demo)
+    </a>
+
+</div>
 <div class="row">
   <div class="col-md-4 mb-3">
     <div class="card text-bg-primary">
