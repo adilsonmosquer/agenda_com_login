@@ -9,12 +9,13 @@ from flask import (
     request,
     url_for,
 )
+
 from werkzeug.utils import secure_filename
 
 from app.services.importacao_service import (
-    listar_importacoes,
-    importar_cronograma,
     excluir_importacao,
+    importar_cronograma,
+    listar_importacoes,
 )
 
 importacoes_bp = Blueprint(
@@ -23,37 +24,72 @@ importacoes_bp = Blueprint(
 )
 
 
+EXTENSOES_EXCEL = {
+    "xlsx",
+    "xls",
+}
+
+
 def arquivo_permitido(nome_arquivo):
+
     if "." not in nome_arquivo:
+
         return False
 
     extensao = nome_arquivo.rsplit(".", 1)[1].lower()
 
-    return extensao in current_app.config["ALLOWED_EXTENSIONS"]
+    return extensao in EXTENSOES_EXCEL
 
 
-@importacoes_bp.route("/importacoes", methods=["GET", "POST"])
+@importacoes_bp.route(
+    "/importacoes",
+    methods=["GET", "POST"],
+)
 def importacoes():
 
     if request.method == "POST":
 
         if "arquivo" not in request.files:
-            flash("Nenhum arquivo enviado.", "danger")
+
+            flash(
+                "Nenhum arquivo enviado.",
+                "danger",
+            )
+
             return redirect(request.url)
 
         arquivo = request.files["arquivo"]
 
         if arquivo.filename == "":
-            flash("Selecione um arquivo.", "warning")
+
+            flash(
+                "Selecione um arquivo Excel.",
+                "warning",
+            )
+
             return redirect(request.url)
 
-        if not arquivo_permitido(arquivo.filename):
-            flash("Formato de arquivo não permitido.", "danger")
+        if not arquivo_permitido(
+            arquivo.filename
+        ):
+
+            flash(
+                "Somente arquivos Excel (.xlsx ou .xls) são permitidos.",
+                "danger",
+            )
+
             return redirect(request.url)
 
-        nome = secure_filename(arquivo.filename)
+        nome = secure_filename(
+            arquivo.filename
+        )
 
-        destino = Path(current_app.config["UPLOAD_FOLDER"]) / nome
+        destino = (
+            Path(
+                current_app.config["UPLOAD_FOLDER"]
+            )
+            / nome
+        )
 
         destino.parent.mkdir(
             parents=True,
@@ -65,40 +101,71 @@ def importacoes():
         try:
 
             importar_cronograma(
+
                 arquivo_path=destino,
+
                 nome_arquivo=nome,
+
             )
 
             flash(
+
                 "Cronograma importado com sucesso.",
+
                 "success",
+
             )
 
         except Exception as erro:
 
             flash(
+
                 f"Erro durante a importação: {erro}",
+
                 "danger",
+
             )
 
-        return redirect(url_for("importacoes.importacoes"))
-
-    importacoes = listar_importacoes()
+        return redirect(
+            url_for(
+                "importacoes.importacoes"
+            )
+        )
 
     return render_template(
+
         "importacoes.html",
-        importacoes=importacoes,
+
+        importacoes=listar_importacoes(),
+
     )
 
 
-@importacoes_bp.post("/importacoes/<int:importacao_id>/excluir")
+@importacoes_bp.post(
+    "/importacoes/<int:importacao_id>/excluir"
+)
 def excluir(importacao_id):
 
     try:
-        excluir_importacao(importacao_id)
-        flash("Importação excluída com sucesso.", "success")
+
+        excluir_importacao(
+            importacao_id
+        )
+
+        flash(
+            "Importação excluída com sucesso.",
+            "success",
+        )
 
     except Exception as erro:
-        flash(f"Erro ao excluir: {erro}", "danger")
 
-    return redirect(url_for("importacoes.importacoes"))
+        flash(
+            f"Erro ao excluir: {erro}",
+            "danger",
+        )
+
+    return redirect(
+        url_for(
+            "importacoes.importacoes"
+        )
+    )

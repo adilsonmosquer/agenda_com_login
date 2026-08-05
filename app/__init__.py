@@ -42,12 +42,14 @@ def create_app():
     from app.routes.agenda import agenda_bp
     from app.routes.evento import evento_bp
     from app.routes.configuracoes import configuracoes_bp
+    from app.routes.tv import tv_bp
 
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(importacoes_bp)
     app.register_blueprint(agenda_bp)
     app.register_blueprint(evento_bp)
     app.register_blueprint(configuracoes_bp)
+    app.register_blueprint(tv_bp)
 
     # ==========================
     # Inicialização

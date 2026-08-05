@@ -58,6 +58,12 @@ class CronogramaItem(db.Model):
         default=False,
     )
 
+    lembrete_enviado = db.Column(
+    db.Boolean,
+    nullable=False,
+    default=False,
+    )
+
     observacao = db.Column(
         db.String(300),
     )

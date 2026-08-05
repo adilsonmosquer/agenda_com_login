@@ -123,7 +123,7 @@ class ConfiguracaoService:
             {
                 "categoria": "Agenda",
                 "chave": "hora_resumo",
-                "valor": "07:00",
+                "valor": "08:00",
                 "tipo": "hora",
                 "descricao": "Horário do resumo diário",
             },

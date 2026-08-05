@@ -6,7 +6,13 @@ from flask import (
     url_for,
 )
 
-from app.services.dashboard_service import obter_dados_dashboard
+from app.services.dashboard_service import (
+    obter_dados_dashboard,
+    concluir_evento,
+    marcar_pendente,
+    excluir_evento,
+)
+
 from app.services.telegram_service import TelegramService
 from app.services.demo_service import DemoService
 
@@ -46,7 +52,11 @@ def enviar_telegram():
             "danger",
         )
 
-    return redirect(url_for("dashboard.dashboard"))
+    return redirect(
+        url_for("dashboard.dashboard")
+    )
+
+
 @dashboard_bp.route("/demo/popular")
 def popular_demo():
 
@@ -57,4 +67,51 @@ def popular_demo():
         "success",
     )
 
-    return redirect(url_for("dashboard.dashboard"))
+    return redirect(
+        url_for("dashboard.dashboard")
+    )
+
+
+@dashboard_bp.post("/evento/<int:evento_id>/concluir")
+def concluir(evento_id):
+
+    concluir_evento(evento_id)
+
+    flash(
+        "Evento concluído.",
+        "success",
+    )
+
+    return redirect(
+        url_for("dashboard.dashboard")
+    )
+
+
+@dashboard_bp.post("/evento/<int:evento_id>/pendente")
+def pendente(evento_id):
+
+    marcar_pendente(evento_id)
+
+    flash(
+        "Evento marcado como pendente.",
+        "warning",
+    )
+
+    return redirect(
+        url_for("dashboard.dashboard")
+    )
+
+
+@dashboard_bp.post("/evento/<int:evento_id>/excluir")
+def excluir(evento_id):
+
+    excluir_evento(evento_id)
+
+    flash(
+        "Evento excluído.",
+        "success",
+    )
+
+    return redirect(
+        url_for("dashboard.dashboard")
+    )

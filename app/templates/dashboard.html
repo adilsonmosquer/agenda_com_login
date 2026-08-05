@@ -1,5 +1,10 @@
-{% extends "base.html" %} {% block title %} Dashboard {% endblock %} {% block
-content %}
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
 
 <h2 class="mb-4">Dashboard</h2>
 
@@ -16,98 +21,202 @@ content %}
     </a>
 
 </div>
+
 <div class="row">
-  <div class="col-md-4 mb-3">
-    <div class="card text-bg-primary">
-      <div class="card-body">
-        <h5 class="card-title">Eventos</h5>
 
-        <h2>{{ eventos_hoje }}</h2>
-      </div>
+    <div class="col-md-4 mb-3">
+
+        <div class="card text-bg-primary">
+
+            <div class="card-body">
+
+                <h5 class="card-title">Eventos</h5>
+
+                <h2>{{ eventos_hoje }}</h2>
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
 
-  <div class="col-md-4 mb-3">
-    <div class="card text-bg-success">
-      <div class="card-body">
-        <h5 class="card-title">Próximo Evento</h5>
+    <div class="col-md-4 mb-3">
 
-        <strong>{{ proximo_evento }}</strong>
+        <div class="card text-bg-success">
 
-        <br />
+            <div class="card-body">
 
-        {{ horario_proximo }}
-      </div>
+                <h5 class="card-title">Próximo Evento</h5>
+
+                <strong>{{ proximo_evento }}</strong>
+
+                <br>
+
+                {{ horario_proximo }}
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
 
-  <div class="col-md-4 mb-3">
-    <div class="card text-bg-warning">
-      <div class="card-body">
-        <h5 class="card-title">Pendentes</h5>
+    <div class="col-md-4 mb-3">
 
-        <h2>{{ pendentes }}</h2>
-      </div>
+        <div class="card text-bg-warning">
+
+            <div class="card-body">
+
+                <h5 class="card-title">Pendentes</h5>
+
+                <h2>{{ pendentes }}</h2>
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
+
 </div>
 
 <div class="card mt-4">
-  <div class="card-header">
-    <strong> Cronograma </strong>
-  </div>
 
-  <div class="card-body">
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th>Data</th>
+    <div class="card-header">
 
-          <th>Hora</th>
+        <strong>Cronograma</strong>
 
-          <th>Descrição</th>
+    </div>
 
-          <th>Executor</th>
+    <div class="card-body">
 
-          <th>Status</th>
-        </tr>
-      </thead>
+        <table class="table table-striped table-hover align-middle">
 
-      <tbody>
-        {% for evento in eventos %}
+            <thead>
 
-        <tr>
-          <td>{{ evento.data }}</td>
+                <tr>
 
-          <td>{{ evento.horario }}</td>
+                    <th>Data</th>
 
-          <td>{{ evento.descricao }}</td>
+                    <th>Hora</th>
 
-          <td>{{ evento.executor }}</td>
+                    <th>Procedimentos</th>
 
-          <td>
-            {% if evento.concluido %}
+                    <th>Executor</th>
 
-            <span class="badge bg-success"> Concluído </span>
+                    <th>Status</th>
 
-            {% else %}
+                    <th style="width:220px;">Ações</th>
 
-            <span class="badge bg-warning text-dark"> Pendente </span>
+                </tr>
 
-            {% endif %}
-          </td>
-        </tr>
+            </thead>
 
-        {% else %}
+            <tbody>
 
-        <tr>
-          <td colspan="5" class="text-center">Nenhum evento encontrado.</td>
-        </tr>
+                {% for evento in eventos %}
 
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+                <tr>
+
+                    <td>{{ evento.data }}</td>
+
+                    <td>{{ evento.horario }}</td>
+
+                    <td>{{ evento.descricao }}</td>
+
+                    <td>{{ evento.executor }}</td>
+
+                    <td>
+
+                        {% if evento.concluido %}
+
+                            <span class="badge bg-success">
+                                Concluído
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-warning text-dark">
+                                Pendente
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if evento.concluido %}
+
+                        <form
+                            method="post"
+                            action="{{ url_for('dashboard.pendente', evento_id=evento.id) }}"
+                            class="d-inline">
+
+                            <button
+                                class="btn btn-sm btn-warning">
+
+                                ↩ Pendente
+
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                        <form
+                            method="post"
+                            action="{{ url_for('dashboard.concluir', evento_id=evento.id) }}"
+                            class="d-inline">
+
+                            <button
+                                class="btn btn-sm btn-success">
+
+                                ✔ Concluir
+
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+                        <form
+                            method="post"
+                            action="{{ url_for('dashboard.excluir', evento_id=evento.id) }}"
+                            class="d-inline"
+                            onsubmit="return confirm('Excluir este evento?');">
+
+                            <button
+                                class="btn btn-sm btn-danger">
+
+                                🗑 Excluir
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="6" class="text-center">
+
+                        Nenhum evento encontrado.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
 
 {% endblock %}
