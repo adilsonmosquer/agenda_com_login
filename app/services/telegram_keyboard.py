@@ -12,19 +12,19 @@ def teclado_evento(evento):
 
                     "callback_data": f"concluir:{evento.id}"
 
+                },
+
+                {
+
+                    "text": "📌 Pendente",
+
+                    "callback_data": f"pendente:{evento.id}"
+
                 }
 
             ],
 
             [
-
-                {
-
-                    "text": "⏰ Adiar",
-
-                    "callback_data": f"adiar:{evento.id}"
-
-                },
 
                 {
 

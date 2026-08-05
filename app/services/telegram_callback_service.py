@@ -28,12 +28,10 @@ class TelegramCallbackService:
                 "Evento concluído."
             )
 
-        if acao == "ocultar":
+        elif acao == "pendente":
 
-            evento = TelegramEventService.ocultar(
-                evento_id,
-                usuario="Telegram",
-                motivo="Ocultado pelo usuário",
+            evento = TelegramEventService.marcar_pendente(
+                evento_id
             )
 
             if not evento:
@@ -45,38 +43,34 @@ class TelegramCallbackService:
 
             return (
                 True,
-                "🙈 <b>Evento ocultado.</b>\n\n"
-                "Ele não aparecerá mais na Agenda, "
-                "Dashboard, Tela TV e Telegram.\n\n"
-                "Pode ser restaurado posteriormente."
-            )
-
-        if acao == "restaurar":
-
-            evento = TelegramEventService.restaurar(
-                evento_id,
-                usuario="Telegram",
-            )
-
-            if not evento:
-
-                return (
-                    False,
-                    "Evento não encontrado.",
-                )
-
-            return (
-                True,
-                f"♻️ <b>{evento.horario}</b>\n\n"
+                f"📌 <b>{evento.horario}</b>\n\n"
                 f"{evento.descricao}\n\n"
-                "Evento restaurado."
+                "Evento marcado como pendente."
             )
 
-        if acao == "adiar":
+        elif acao == "excluir":
+
+            sucesso = TelegramEventService.excluir(
+                evento_id
+            )
+
+            if not sucesso:
+
+                return (
+                    False,
+                    "Evento não encontrado.",
+                )
+
+            return (
+                True,
+                "🗑 Evento excluído."
+            )
+
+        elif acao == "adiar":
 
             return (
                 False,
-                "⏰ Função disponível na Sprint 9.4."
+                "⏰ Função disponível na versão 1.1."
             )
 
         return (
