@@ -34,6 +34,12 @@ def create_app():
     )
 
     # ==========================
+    # Scheduler
+    # ==========================
+
+    from app.scheduler.jobs import registrar_jobs
+
+    # ==========================
     # Blueprints
     # ==========================
 
@@ -43,6 +49,7 @@ def create_app():
     from app.routes.evento import evento_bp
     from app.routes.configuracoes import configuracoes_bp
     from app.routes.tv import tv_bp
+    from app.routes.telegram import bp
 
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(importacoes_bp)
@@ -50,6 +57,7 @@ def create_app():
     app.register_blueprint(evento_bp)
     app.register_blueprint(configuracoes_bp)
     app.register_blueprint(tv_bp)
+    app.register_blueprint(bp)
 
     # ==========================
     # Inicialização
@@ -58,5 +66,7 @@ def create_app():
     with app.app_context():
 
         ConfiguracaoService.criar_padroes()
+
+    registrar_jobs(app)
 
     return app

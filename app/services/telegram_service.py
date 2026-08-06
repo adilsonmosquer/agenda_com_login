@@ -55,19 +55,32 @@ class TelegramService:
             )
 
         pendentes = sum(
-            1 for e in eventos if not e.concluido
+            1
+            for evento in eventos
+            if not evento.concluido
         )
 
         concluidos = sum(
-            1 for e in eventos if e.concluido
+            1
+            for evento in eventos
+            if evento.concluido
         )
 
         mensagem = []
 
-        mensagem.append("📅 Agenda Operacional CPEx")
+        mensagem.append(
+            "📅 Agenda Operacional CPEx"
+        )
+
         mensagem.append("")
-        mensagem.append(f"📆 {hoje}")
-        mensagem.append("──────────────────")
+
+        mensagem.append(
+            f"📆 {hoje}"
+        )
+
+        mensagem.append(
+            "──────────────────"
+        )
 
         for evento in eventos:
 
@@ -93,13 +106,18 @@ class TelegramService:
 
             mensagem.append("")
 
-        mensagem.append("──────────────────")
+        mensagem.append(
+            "──────────────────"
+        )
+
         mensagem.append(
             f"Total: {len(eventos)}"
         )
+
         mensagem.append(
             f"Pendentes: {pendentes}"
         )
+
         mensagem.append(
             f"Concluídos: {concluidos}"
         )
@@ -107,7 +125,7 @@ class TelegramService:
         return "\n".join(mensagem)
 
     @staticmethod
-    def enviar():
+    def enviar_texto(texto):
 
         token = ConfiguracaoService.get(
             "telegram_token"
@@ -134,16 +152,32 @@ class TelegramService:
         )
 
         payload = {
+
             "chat_id": chat_id,
-            "text": TelegramService.montar_mensagem(),
+
+            "text": texto,
+
         }
 
         resposta = requests.post(
+
             url,
+
             json=payload,
+
             timeout=15,
+
         )
 
         resposta.raise_for_status()
 
-        return True
+        return resposta.ok
+
+    @staticmethod
+    def enviar():
+
+        return TelegramService.enviar_texto(
+
+            TelegramService.montar_mensagem()
+
+        )
