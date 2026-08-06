@@ -63,9 +63,9 @@ def create_app():
     # Inicialização
     # ==========================
 
-    with app.app_context():
+    #with app.app_context():
 
-        ConfiguracaoService.criar_padroes()
+        #ConfiguracaoService.criar_padroes()
 
     registrar_jobs(app)
 
