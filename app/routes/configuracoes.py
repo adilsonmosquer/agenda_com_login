@@ -6,6 +6,7 @@ from flask import (
     request,
     url_for,
 )
+from flask_login import login_required
 
 from app.services.configuracao_service import ConfiguracaoService
 
@@ -20,6 +21,7 @@ configuracoes_bp = Blueprint(
     "/configuracoes",
     methods=["GET", "POST"],
 )
+@login_required
 def configuracoes():
 
     if request.method == "POST":

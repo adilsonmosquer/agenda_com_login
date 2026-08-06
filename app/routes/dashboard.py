@@ -1,3 +1,4 @@
+from flask_login import login_required
 from flask import (
     Blueprint,
     flash,
@@ -23,6 +24,7 @@ dashboard_bp = Blueprint(
 
 
 @dashboard_bp.route("/")
+@login_required
 def dashboard():
 
     dados = obter_dados_dashboard()
@@ -34,6 +36,7 @@ def dashboard():
 
 
 @dashboard_bp.route("/telegram/enviar")
+@login_required
 def enviar_telegram():
 
     try:
@@ -58,6 +61,7 @@ def enviar_telegram():
 
 
 @dashboard_bp.route("/demo/popular")
+@login_required
 def popular_demo():
 
     DemoService.popular()
@@ -73,6 +77,7 @@ def popular_demo():
 
 
 @dashboard_bp.post("/evento/<int:evento_id>/concluir")
+@login_required
 def concluir(evento_id):
 
     concluir_evento(evento_id)
@@ -88,6 +93,7 @@ def concluir(evento_id):
 
 
 @dashboard_bp.post("/evento/<int:evento_id>/pendente")
+@login_required
 def pendente(evento_id):
 
     marcar_pendente(evento_id)
@@ -103,6 +109,7 @@ def pendente(evento_id):
 
 
 @dashboard_bp.post("/evento/<int:evento_id>/excluir")
+@login_required
 def excluir(evento_id):
 
     excluir_evento(evento_id)

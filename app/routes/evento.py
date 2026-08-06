@@ -8,11 +8,11 @@ from flask import (
     request,
     url_for,
 )
+from flask_login import login_required
 
 from db import db
 
 from app.models.cronograma_item import CronogramaItem
-
 from app.services.evento_service import EventoService
 
 
@@ -65,6 +65,7 @@ evento_bp = Blueprint(
     "/eventos/novo",
     methods=["GET", "POST"],
 )
+@login_required
 def novo():
 
     if request.method == "POST":
@@ -125,6 +126,7 @@ def novo():
     "/eventos/<int:id>/editar",
     methods=["GET", "POST"],
 )
+@login_required
 def editar(id):
 
     evento = CronogramaItem.query.get_or_404(id)
@@ -181,6 +183,7 @@ def editar(id):
 
 
 @evento_bp.route("/eventos/<int:id>/concluir")
+@login_required
 def concluir(id):
 
     evento = CronogramaItem.query.get_or_404(id)
@@ -198,6 +201,7 @@ def concluir(id):
 
 
 @evento_bp.route("/eventos/<int:id>/excluir")
+@login_required
 def excluir(id):
 
     evento = CronogramaItem.query.get_or_404(id)

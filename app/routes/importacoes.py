@@ -9,6 +9,7 @@ from flask import (
     request,
     url_for,
 )
+from flask_login import login_required
 
 from werkzeug.utils import secure_filename
 
@@ -33,7 +34,6 @@ EXTENSOES_EXCEL = {
 def arquivo_permitido(nome_arquivo):
 
     if "." not in nome_arquivo:
-
         return False
 
     extensao = nome_arquivo.rsplit(".", 1)[1].lower()
@@ -45,6 +45,7 @@ def arquivo_permitido(nome_arquivo):
     "/importacoes",
     methods=["GET", "POST"],
 )
+@login_required
 def importacoes():
 
     if request.method == "POST":
@@ -101,29 +102,20 @@ def importacoes():
         try:
 
             importar_cronograma(
-
                 arquivo_path=destino,
-
                 nome_arquivo=nome,
-
             )
 
             flash(
-
                 "Cronograma importado com sucesso.",
-
                 "success",
-
             )
 
         except Exception as erro:
 
             flash(
-
                 f"Erro durante a importação: {erro}",
-
                 "danger",
-
             )
 
         return redirect(
@@ -133,17 +125,15 @@ def importacoes():
         )
 
     return render_template(
-
         "importacoes.html",
-
         importacoes=listar_importacoes(),
-
     )
 
 
 @importacoes_bp.post(
     "/importacoes/<int:importacao_id>/excluir"
 )
+@login_required
 def excluir(importacao_id):
 
     try:

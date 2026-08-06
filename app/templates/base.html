@@ -44,6 +44,26 @@
 
         </span>
 
+        {% if current_user.is_authenticated %}
+
+        <div class="text-end text-white">
+
+            <div>
+
+                👤 {{ current_user.nome }}
+
+            </div>
+
+            <small>
+
+                {{ current_user.usuario }}
+
+            </small>
+
+        </div>
+
+        {% endif %}
+
     </div>
 
 </nav>
@@ -101,6 +121,22 @@
                     class="list-group-item list-group-item-action {% if request.endpoint == 'tv.painel_tv' %}active{% endif %}">
 
                     📺 Painel TV
+
+                </a>
+
+                <a
+                    href="{{ url_for('auth.alterar_senha') }}"
+                    class="list-group-item list-group-item-action">
+
+                    🔑 Alterar senha
+
+                </a>
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="list-group-item list-group-item-action text-danger">
+
+                    🚪 Sair
 
                 </a>
 
@@ -174,5 +210,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
 </html>

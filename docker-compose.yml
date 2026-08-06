@@ -1,0 +1,16 @@
+services:
+  agenda-cpex:
+    build: .
+    container_name: agenda-cpex
+    restart: unless-stopped
+
+    ports:
+      - "8100:8000"
+
+    volumes:
+      - .:/app
+      - ./instance:/app/instance
+      - ./uploads:/app/uploads
+
+    environment:
+      - TZ=America/Sao_Paulo

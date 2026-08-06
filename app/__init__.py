@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_migrate import Migrate
+from flask_login import LoginManager
 
 from config import Config
 from db import db
 
 migrate = Migrate()
+login_manager = LoginManager()
 
 
 def create_app():
@@ -17,6 +19,11 @@ def create_app():
 
     migrate.init_app(app, db)
 
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Faça login para acessar a Agenda."
+    login_manager.login_message_category = "warning"
+
     # ==========================
     # Modelos
     # ==========================
@@ -24,14 +31,18 @@ def create_app():
     from app.models.importacao import Importacao
     from app.models.cronograma_item import CronogramaItem
     from app.models.configuracao import Configuracao
+    from app.models.usuario import Usuario
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return Usuario.query.get(int(user_id))
 
     # ==========================
     # Services
     # ==========================
 
-    from app.services.configuracao_service import (
-        ConfiguracaoService,
-    )
+    from app.services.configuracao_service import ConfiguracaoService
+    from app.services.usuario_service import UsuarioService
 
     # ==========================
     # Scheduler
@@ -50,7 +61,9 @@ def create_app():
     from app.routes.configuracoes import configuracoes_bp
     from app.routes.tv import tv_bp
     from app.routes.telegram import bp
+    from app.routes.auth import auth_bp
 
+    app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(importacoes_bp)
     app.register_blueprint(agenda_bp)
@@ -63,9 +76,11 @@ def create_app():
     # Inicialização
     # ==========================
 
-    #with app.app_context():
+    with app.app_context():
 
-        #ConfiguracaoService.criar_padroes()
+        ConfiguracaoService.criar_padroes()
+
+        UsuarioService.criar_admin()
 
     registrar_jobs(app)
 
