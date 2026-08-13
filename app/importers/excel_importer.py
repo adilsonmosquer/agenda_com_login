@@ -27,7 +27,13 @@ class ExcelImporter:
         "HORA*",
         "PROCEDIMENTOS",
         "EXECUTOR",
+        "SISTEMA",
     )
+
+    SISTEMAS_VALIDOS = {
+        "SIPPES",
+        "SIAPPES",
+    }
 
     def __init__(self, arquivo):
 
@@ -109,14 +115,16 @@ class ExcelImporter:
                 ).value
             ).upper()
 
-            for col in range(1, 6)
+            for col in range(1, 7)
 
         )
 
         if cabecalho != self.CABECALHO:
 
             raise ValueError(
-                "Layout do cronograma inválido."
+                "Layout do cronograma inválido. "
+                "Esperado: DATA, DIA, HORA*, PROCEDIMENTOS, "
+                "EXECUTOR, SISTEMA."
             )
 
         itens = []
@@ -144,6 +152,20 @@ class ExcelImporter:
             if descricao == "":
 
                 break
+
+            sistema = self._texto(
+                planilha.cell(
+                    linha,
+                    6,
+                ).value
+            ).upper()
+
+            if sistema and sistema not in self.SISTEMAS_VALIDOS:
+
+                raise ValueError(
+                    f"Sistema inválido na linha {linha}: "
+                    f"'{sistema}'. Use SIPPES ou SIAPPES."
+                )
 
             itens.append(
 
@@ -173,6 +195,8 @@ class ExcelImporter:
                             5,
                         ).value
                     ),
+
+                    "sistema": sistema,
 
                     "cor": None,
 

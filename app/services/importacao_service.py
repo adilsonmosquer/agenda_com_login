@@ -62,6 +62,8 @@ def importar_cronograma(
 
                 importacao_id=importacao.id,
 
+                origem="IMPORTACAO",
+
                 data=item["data"],
 
                 dia_semana=item["dia_semana"],
@@ -72,7 +74,15 @@ def importar_cronograma(
 
                 executor=item["executor"],
 
+                sistema=item.get("sistema"),
+
                 cor=item.get("cor"),
+
+                status="Pendente",
+
+                concluido=False,
+
+                lembrete_enviado=False,
 
             )
 

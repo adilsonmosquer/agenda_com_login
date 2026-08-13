@@ -8,6 +8,7 @@ from flask import (
     request,
     url_for,
 )
+
 from flask_login import login_required
 
 from db import db
@@ -29,6 +30,12 @@ MESES = {
     10: "out",
     11: "nov",
     12: "dez",
+}
+
+
+SISTEMAS_VALIDOS = {
+    "SIPPES",
+    "SIAPES",
 }
 
 
@@ -55,6 +62,21 @@ def formatar_data_cpex(data):
         return data
 
 
+def obter_sistema():
+
+    sistema = (
+        request.form.get("sistema") or ""
+    ).strip().upper()
+
+    if sistema and sistema not in SISTEMAS_VALIDOS:
+
+        raise ValueError(
+            "Sistema inválido. Use SIPPES ou SIAPES."
+        )
+
+    return sistema or None
+
+
 evento_bp = Blueprint(
     "evento",
     __name__,
@@ -69,6 +91,26 @@ evento_bp = Blueprint(
 def novo():
 
     if request.method == "POST":
+
+        try:
+
+            sistema = obter_sistema()
+
+        except ValueError as erro:
+
+            flash(
+                str(erro),
+                "danger",
+            )
+
+            return render_template(
+                "evento_form.html",
+                evento=None,
+                titulo="Novo Evento",
+                hoje=datetime.now().strftime(
+                    "%Y-%m-%d"
+                ),
+            )
 
         evento = CronogramaItem(
 
@@ -86,6 +128,8 @@ def novo():
 
             executor=request.form.get("executor"),
 
+            sistema=sistema,
+
             observacao=request.form.get("observacao"),
 
             cor=request.form.get("cor"),
@@ -93,6 +137,8 @@ def novo():
             status="Pendente",
 
             concluido=False,
+
+            lembrete_enviado=False,
 
         )
 
@@ -144,6 +190,26 @@ def editar(id):
 
     if request.method == "POST":
 
+        try:
+
+            sistema = obter_sistema()
+
+        except ValueError as erro:
+
+            flash(
+                str(erro),
+                "danger",
+            )
+
+            return render_template(
+                "evento_form.html",
+                evento=evento,
+                titulo="Editar Evento",
+                hoje=datetime.now().strftime(
+                    "%Y-%m-%d"
+                ),
+            )
+
         evento.data = formatar_data_cpex(
             request.form["data"]
         )
@@ -153,6 +219,8 @@ def editar(id):
         evento.descricao = request.form["descricao"]
 
         evento.executor = request.form.get("executor")
+
+        evento.sistema = sistema
 
         evento.observacao = request.form.get("observacao")
 
@@ -182,7 +250,9 @@ def editar(id):
     )
 
 
-@evento_bp.route("/eventos/<int:id>/concluir")
+@evento_bp.route(
+    "/eventos/<int:id>/concluir"
+)
 @login_required
 def concluir(id):
 
@@ -200,7 +270,9 @@ def concluir(id):
     )
 
 
-@evento_bp.route("/eventos/<int:id>/excluir")
+@evento_bp.route(
+    "/eventos/<int:id>/excluir"
+)
 @login_required
 def excluir(id):
 

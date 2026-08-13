@@ -2,6 +2,7 @@ from db import db
 
 
 class CronogramaItem(db.Model):
+
     __tablename__ = "cronograma_itens"
 
     id = db.Column(
@@ -40,6 +41,10 @@ class CronogramaItem(db.Model):
         nullable=False,
     )
 
+    sistema = db.Column(
+        db.String(10),
+    )
+
     executor = db.Column(
         db.String(100),
     )
@@ -59,9 +64,9 @@ class CronogramaItem(db.Model):
     )
 
     lembrete_enviado = db.Column(
-    db.Boolean,
-    nullable=False,
-    default=False,
+        db.Boolean,
+        nullable=False,
+        default=False,
     )
 
     observacao = db.Column(

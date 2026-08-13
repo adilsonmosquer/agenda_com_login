@@ -8,11 +8,13 @@ Agenda
 
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
 
         <div>
 
-            <h2>Agenda do Dia</h2>
+            <h2>
+                Agenda
+            </h2>
 
             <p class="text-muted mb-0">
 
@@ -44,15 +46,90 @@ Agenda
 
     </div>
 
-    {% with mensagens = get_flashed_messages(with_categories=true) %}
-        {% if mensagens %}
-            {% for categoria, mensagem in mensagens %}
-                <div class="alert alert-{{ categoria }}">
-                    {{ mensagem }}
+
+    <!-- Navegação de datas -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-3 text-md-start text-center mb-2 mb-md-0">
+
+                    <a
+                        href="{{ url_for(
+                            'agenda.agenda',
+                            data=(data_selecionada - timedelta(days=1)).strftime('%Y-%m-%d')
+                        ) }}"
+                        class="btn btn-outline-primary">
+
+                        ◀ Dia anterior
+
+                    </a>
+
                 </div>
+
+
+                <div class="col-md-6 text-center">
+
+                    <h4 class="mb-1">
+
+                        {{ data_selecionada.strftime('%d/%m/%Y') }}
+
+                    </h4>
+
+                    <a
+                        href="{{ url_for('agenda.agenda') }}"
+                        class="btn btn-sm btn-outline-secondary">
+
+                        Hoje
+
+                    </a>
+
+                </div>
+
+
+                <div class="col-md-3 text-md-end text-center mt-2 mt-md-0">
+
+                    <a
+                        href="{{ url_for(
+                            'agenda.agenda',
+                            data=(data_selecionada + timedelta(days=1)).strftime('%Y-%m-%d')
+                        ) }}"
+                        class="btn btn-outline-primary">
+
+                        Próximo dia ▶
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+
+        {% if mensagens %}
+
+            {% for categoria, mensagem in mensagens %}
+
+                <div class="alert alert-{{ categoria }}">
+
+                    {{ mensagem }}
+
+                </div>
+
             {% endfor %}
+
         {% endif %}
+
     {% endwith %}
+
 
     {% if eventos %}
 
@@ -86,6 +163,7 @@ Agenda
 
             {% endif %}
 
+
             <div class="list-group-item border-start border-4 border-{{ classe }}">
 
                 <div class="d-flex justify-content-between">
@@ -95,11 +173,38 @@ Agenda
                         <h5 class="mb-2">
 
                             {{ icone }}
-                            {{ evento.horario }}
-                            -
+
+                            {% if evento.horario %}
+
+                                {{ evento.horario }} -
+
+                            {% else %}
+
+                                Sem horário -
+
+                            {% endif %}
+
                             {{ evento.descricao }}
 
                         </h5>
+
+
+                        {% if evento.sistema %}
+
+                        <p class="mb-1">
+
+                            <strong>Sistema:</strong>
+
+                            <span class="badge bg-info text-dark">
+
+                                {{ evento.sistema }}
+
+                            </span>
+
+                        </p>
+
+                        {% endif %}
+
 
                         {% if evento.executor %}
 
@@ -113,6 +218,7 @@ Agenda
 
                         {% endif %}
 
+
                         {% if evento.observacao %}
 
                         <p class="mb-2">
@@ -122,6 +228,7 @@ Agenda
                         </p>
 
                         {% endif %}
+
 
                         {% if evento.origem == "MANUAL" %}
 
@@ -143,6 +250,7 @@ Agenda
 
                     </div>
 
+
                     <div class="text-end">
 
                         <span class="badge bg-{{ classe }} mb-2">
@@ -152,6 +260,7 @@ Agenda
                         </span>
 
                         <br>
+
 
                         {% if evento.concluido %}
 
@@ -174,6 +283,7 @@ Agenda
                             </a>
 
                         {% endif %}
+
 
                         {% if evento.origem == "MANUAL" %}
 
@@ -212,7 +322,7 @@ Agenda
 
         <div class="alert alert-info">
 
-            Nenhum evento encontrado para hoje.
+            Nenhum evento encontrado para esta data.
 
         </div>
 

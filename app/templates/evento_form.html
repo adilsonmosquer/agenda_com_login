@@ -33,9 +33,7 @@
                             <div class="col-md-4 mb-3">
 
                                 <label class="form-label">
-
                                     Data
-
                                 </label>
 
                                 <input
@@ -50,9 +48,7 @@
                             <div class="col-md-4 mb-3">
 
                                 <label class="form-label">
-
                                     Horário
-
                                 </label>
 
                                 <input
@@ -67,9 +63,7 @@
                             <div class="col-md-4 mb-3">
 
                                 <label class="form-label">
-
                                     Cor
-
                                 </label>
 
                                 <select
@@ -112,9 +106,7 @@
                         <div class="mb-3">
 
                             <label class="form-label">
-
                                 Descrição
-
                             </label>
 
                             <input
@@ -129,9 +121,7 @@
                         <div class="mb-3">
 
                             <label class="form-label">
-
                                 Executor
-
                             </label>
 
                             <input
@@ -142,12 +132,42 @@
 
                         </div>
 
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Sistema
+                            </label>
+
+                            <select
+                                name="sistema"
+                                class="form-select">
+
+                                <option value="">
+                                    Não informado
+                                </option>
+
+                                <option value="SIPPES"
+                                    {% if evento and evento.sistema == "SIPPES" %}selected{% endif %}>
+                                    SIPPES
+                                </option>
+
+                                <option value="SIAPES"
+                                    {% if evento and evento.sistema == "SIAPES" %}selected{% endif %}>
+                                    SIAPES
+                                </option>
+
+                            </select>
+
+                            <div class="form-text">
+                                Informe o sistema relacionado ao evento.
+                            </div>
+
+                        </div>
+
                         <div class="mb-4">
 
                             <label class="form-label">
-
                                 Observação
-
                             </label>
 
                             <textarea

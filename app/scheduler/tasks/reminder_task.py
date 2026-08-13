@@ -36,6 +36,7 @@ def executar():
 
     agora = datetime.now()
 
+    # Procura eventos que acontecerão daqui a 15 minutos
     horario = (
         agora + timedelta(minutes=15)
     ).strftime("%H:%M")
@@ -55,10 +56,15 @@ def executar():
 
     for evento in eventos:
 
+        sistema = evento.sistema or "NÃO INFORMADO"
+
+        executor = evento.executor or "Não informado"
+
         texto = (
-            "⏰ Lembrete\n\n"
+            f"🔔 Lembrete — {sistema}\n\n"
             f"Horário: {evento.horario}\n"
-            f"Evento: {evento.descricao}"
+            f"Evento: {evento.descricao}\n"
+            f"Executor: {executor}"
         )
 
         token = TelegramService.enviar_texto(
@@ -76,7 +82,6 @@ def executar():
     if enviados:
 
         print(
-            f"[ReminderTask] {enviados} lembrete(s) enviado(s)."
+            f"[ReminderTask] "
+            f"{enviados} lembrete(s) enviado(s)."
         )
-
-    return enviados
