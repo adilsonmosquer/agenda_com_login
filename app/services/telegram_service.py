@@ -36,23 +36,7 @@ class TelegramService:
         )
 
     @staticmethod
-    def montar_mensagem():
-
-        hoje = TelegramService.data_hoje()
-
-        eventos = (
-            CronogramaItem.query
-            .filter_by(data=hoje)
-            .order_by(CronogramaItem.horario)
-            .all()
-        )
-
-        if not eventos:
-
-            return (
-                "📅 Agenda Operacional CPEx\n\n"
-                "Nenhum evento para hoje."
-            )
+    def montar_mensagem(eventos, sistema, hoje):
 
         pendentes = sum(
             1
@@ -75,6 +59,10 @@ class TelegramService:
         mensagem.append("")
 
         mensagem.append(
+            f"🔹 SISTEMA: {sistema}"
+        )
+
+        mensagem.append(
             f"📆 {hoje}"
         )
 
@@ -84,9 +72,17 @@ class TelegramService:
 
         for evento in eventos:
 
-            mensagem.append(
-                f"🕒 {evento.horario}"
-            )
+            if evento.horario:
+
+                mensagem.append(
+                    f"🕒 {evento.horario}"
+                )
+
+            else:
+
+                mensagem.append(
+                    "🕒 Sem horário"
+                )
 
             mensagem.append(
                 evento.descricao
@@ -176,8 +172,54 @@ class TelegramService:
     @staticmethod
     def enviar():
 
-        return TelegramService.enviar_texto(
+        hoje = TelegramService.data_hoje()
 
-            TelegramService.montar_mensagem()
-
+        eventos = (
+            CronogramaItem.query
+            .filter_by(data=hoje)
+            .order_by(CronogramaItem.horario)
+            .all()
         )
+
+        if not eventos:
+
+            return TelegramService.enviar_texto(
+                (
+                    "📅 Agenda Operacional CPEx\n\n"
+                    f"📆 {hoje}\n\n"
+                    "Nenhum evento para hoje."
+                )
+            )
+
+        sistemas = (
+            "SIPPES",
+            "SIAPPES",
+        )
+
+        enviados = 0
+
+        for sistema in sistemas:
+
+            eventos_sistema = [
+                evento
+                for evento in eventos
+                if evento.sistema == sistema
+            ]
+
+            if not eventos_sistema:
+
+                continue
+
+            mensagem = TelegramService.montar_mensagem(
+                eventos_sistema,
+                sistema,
+                hoje,
+            )
+
+            TelegramService.enviar_texto(
+                mensagem
+            )
+
+            enviados += 1
+
+        return enviados

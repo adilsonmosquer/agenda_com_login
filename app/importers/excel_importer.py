@@ -97,6 +97,37 @@ class ExcelImporter:
 
         return str(valor).strip()
 
+    def _detectar_sistema(self, planilha):
+
+        texto_cabecalho = []
+
+        for linha in range(1, 11):
+
+            for coluna in range(1, 10):
+
+                valor = self._texto(
+                    planilha.cell(
+                        row=linha,
+                        column=coluna,
+                    ).value
+                ).upper()
+
+                if valor:
+
+                    texto_cabecalho.append(valor)
+
+        texto = " ".join(texto_cabecalho)
+
+        if "SIAPPES" in texto:
+
+            return "SIAPPES"
+
+        if "SIPPES" in texto:
+
+            return "SIPPES"
+
+        return ""
+
     def importar(self):
 
         workbook = load_workbook(
@@ -105,6 +136,10 @@ class ExcelImporter:
         )
 
         planilha = workbook.active
+
+        sistema_arquivo = self._detectar_sistema(
+            planilha
+        )
 
         cabecalho = tuple(
 
@@ -119,7 +154,19 @@ class ExcelImporter:
 
         )
 
-        if cabecalho != self.CABECALHO:
+        cabecalho_sem_sistema = (
+            "DATA",
+            "DIA",
+            "HORA*",
+            "PROCEDIMENTOS",
+            "EXECUTOR",
+            "",
+        )
+
+        if (
+            cabecalho != self.CABECALHO
+            and cabecalho != cabecalho_sem_sistema
+        ):
 
             raise ValueError(
                 "Layout do cronograma inválido. "
@@ -153,18 +200,34 @@ class ExcelImporter:
 
                 break
 
-            sistema = self._texto(
+            sistema_coluna = self._texto(
                 planilha.cell(
                     linha,
                     6,
                 ).value
             ).upper()
 
+            if sistema_arquivo:
+
+                sistema = sistema_arquivo
+
+            else:
+
+                sistema = sistema_coluna
+
             if sistema and sistema not in self.SISTEMAS_VALIDOS:
 
                 raise ValueError(
                     f"Sistema inválido na linha {linha}: "
                     f"'{sistema}'. Use SIPPES ou SIAPPES."
+                )
+
+            if not sistema:
+
+                raise ValueError(
+                    f"Sistema não identificado na linha {linha}. "
+                    "Informe SIPPES ou SIAPPES no título do arquivo "
+                    "ou na coluna SISTEMA."
                 )
 
             itens.append(
