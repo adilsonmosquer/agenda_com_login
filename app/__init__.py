@@ -1,9 +1,12 @@
+import sys
+
 from flask import Flask
 from flask_migrate import Migrate
 from flask_login import LoginManager
 
 from config import Config
 from db import db
+
 
 migrate = Migrate()
 login_manager = LoginManager()
@@ -35,7 +38,10 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return Usuario.query.get(int(user_id))
+
+        return Usuario.query.get(
+            int(user_id)
+        )
 
     # ==========================
     # Services
@@ -76,12 +82,19 @@ def create_app():
     # Inicialização
     # ==========================
 
-    with app.app_context():
+    executando_migration = (
+        len(sys.argv) > 1
+        and sys.argv[1] == "db"
+    )
 
-        ConfiguracaoService.criar_padroes()
+    if not executando_migration:
 
-        UsuarioService.criar_admin()
+        with app.app_context():
 
-    registrar_jobs(app)
+            ConfiguracaoService.criar_padroes()
+
+            UsuarioService.criar_admin()
+
+        registrar_jobs(app)
 
     return app
